@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_1"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+
+            android:id="@+id/imgBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/tvFileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="name_file"
+            android:textColor="#2196F3"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:layout_marginHorizontal="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/imgBack"
+            app:layout_constraintEnd_toStartOf="@id/tvPage"
+            app:layout_constraintStart_toEndOf="@id/imgBack"
+            app:layout_constraintTop_toTopOf="@+id/imgBack" />
+
+        <TextView
+            android:id="@+id/tvPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 of 6"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/imgBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imgBack" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraint_1">
+
+        <com.github.barteksc.pdfviewer.PDFView
+            android:id="@+id/pdfView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </RelativeLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_2"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_background"
+        android:padding="6dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/previous_page"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/button_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_previous"
+            android:contentDescription="Trang trước"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/zoom_out"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/zoom_out"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/button_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_zoom_out"
+            android:contentDescription="Thu nhỏ"
+            android:layout_marginHorizontal="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/previous_page"
+            app:layout_constraintEnd_toStartOf="@+id/zoom_in"
+            app:layout_constraintStart_toEndOf="@id/previous_page"
+            app:layout_constraintTop_toTopOf="@+id/previous_page"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/zoom_in"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/button_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_zoom_in"
+            android:contentDescription="Phóng to"
+            android:layout_marginHorizontal="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/previous_page"
+            app:layout_constraintEnd_toStartOf="@+id/next"
+            app:layout_constraintStart_toEndOf="@id/zoom_out"
+            app:layout_constraintTop_toTopOf="@+id/previous_page"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/next"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/button_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_next"
+            android:contentDescription="Trang tiếp theo"
+            app:layout_constraintBottom_toBottomOf="@id/previous_page"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/zoom_in"
+            app:layout_constraintTop_toTopOf="@+id/previous_page"
+            app:tint="@android:color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,15 @@
+com.github.barteksc.pdfviewer.android-pdf-viewer-lifecycle-runtime-2.6.2-0 C:\Users\Dat\.gradle\caches\8.11.1\transforms\188114c288384d6c3fb14c222869a1a8\transformed\lifecycle-runtime-2.6.2\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-tracing-1.2.0-1 C:\Users\Dat\.gradle\caches\8.11.1\transforms\24e75a0eaadbec175571014fe7d18893\transformed\tracing-1.2.0\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-core-runtime-2.2.0-2 C:\Users\Dat\.gradle\caches\8.11.1\transforms\506bded0489842502ec9da7deddacd43\transformed\core-runtime-2.2.0\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-profileinstaller-1.3.0-3 C:\Users\Dat\.gradle\caches\8.11.1\transforms\508115d56b6536ed3792c5032d87e47b\transformed\profileinstaller-1.3.0\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-core-viewtree-1.0.0-4 C:\Users\Dat\.gradle\caches\8.11.1\transforms\7036c2a2d7e4ca9ecb8c6b9000a9520d\transformed\core-viewtree-1.0.0\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-core-1.16.0-5 C:\Users\Dat\.gradle\caches\8.11.1\transforms\87c47c7abe7f29a54b096c7ff4d96851\transformed\core-1.16.0\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-startup-runtime-1.1.1-6 C:\Users\Dat\.gradle\caches\8.11.1\transforms\d47c4b7d0a3173289d09914c71be7f0f\transformed\startup-runtime-1.1.1\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-annotation-experimental-1.4.1-7 C:\Users\Dat\.gradle\caches\8.11.1\transforms\e6b14c28b16bd0529396929de31ff982\transformed\annotation-experimental-1.4.1\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-pngs-8 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\build\generated\res\pngs\release
+com.github.barteksc.pdfviewer.android-pdf-viewer-resValues-9 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\build\generated\res\resValues\release
+com.github.barteksc.pdfviewer.android-pdf-viewer-mergeReleaseResources-10 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.github.barteksc.pdfviewer.android-pdf-viewer-mergeReleaseResources-11 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.github.barteksc.pdfviewer.android-pdf-viewer-release-12 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\build\intermediates\merged_res\release\mergeReleaseResources
+com.github.barteksc.pdfviewer.android-pdf-viewer-main-13 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\src\main\res
+com.github.barteksc.pdfviewer.android-pdf-viewer-release-14 C:\Users\Dat\Desktop\PDF-Reader\android-pdf-viewer\src\release\res

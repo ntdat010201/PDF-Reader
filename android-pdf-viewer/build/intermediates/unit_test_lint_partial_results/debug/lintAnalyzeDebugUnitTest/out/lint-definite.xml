@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.10.1" type="incidents">
+
+    <incident
+        id="Aligned16KB"
+        severity="warning"
+        message="The native library `arm64-v8a/libc++_shared.so` (from `com.github.DineroRegnskab:PdfiumAndroid:pdfium-android-1.9.2`) is not 16 KB aligned">
+        <location
+            file="$GRADLE_USER_HOME/caches/8.11.1/transforms/a72154d938d3a244940e0e0596a2affe/transformed/PdfiumAndroid-pdfium-android-1.9.2/jni/arm64-v8a/libc++_shared.so"/>
+    </incident>
+
+</incidents>
