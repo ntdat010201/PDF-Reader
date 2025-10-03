@@ -94,7 +94,9 @@ class ListViewFragment : Fragment() {
         binding.sortBy.contentDescription = "Sắp xếp theo: ${currentSortType.displayName}"
         
         // Có thể thêm tooltip hoặc thay đổi icon tùy theo kiểu sắp xếp
-        binding.sortBy.tooltipText = "Sắp xếp theo: ${currentSortType.displayName}"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            binding.sortBy.tooltipText = "Sắp xếp theo: ${currentSortType.displayName}"
+        }
     }
     
     private fun showSortDialog() {
