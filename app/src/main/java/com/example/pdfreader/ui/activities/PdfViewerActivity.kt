@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pdfreader.databinding.ActivityPdfViewerBinding
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
@@ -37,8 +38,15 @@ class PdfViewerActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompl
 
     private fun setupToolbar() {
         binding.imgBack.setOnClickListener {
-            onBackPressed()
+            finish()
         }
+        
+        // Setup modern back press handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        })
     }
 
     private fun setupClickListeners() {

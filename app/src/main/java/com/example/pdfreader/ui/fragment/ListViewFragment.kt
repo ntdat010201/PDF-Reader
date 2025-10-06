@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pdfreader.adapter.ListViewAdapter
@@ -223,14 +225,26 @@ class ListViewFragment : Fragment() {
 
     private fun sharePdfFile(pdfFile: PdfFile) {
         try {
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // Android 7+ - Sử dụng FileProvider
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    "${requireContext().packageName}.fileprovider",
+                    pdfFile.file
+                )
+            } else {
+                // Android 6 và thấp hơn - Sử dụng Uri.fromFile()
+                Uri.fromFile(pdfFile.file)
+            }
+            
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, Uri.fromFile(pdfFile.file))
+                putExtra(Intent.EXTRA_STREAM, uri)
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
             startActivity(Intent.createChooser(intent, "Chia sẻ PDF"))
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Không thể chia sẻ file", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Không thể chia sẻ file: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -279,16 +293,47 @@ class ListViewFragment : Fragment() {
         try {
             var deleted = false
             
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+ - Sử dụng MediaStore API
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Android 11+ - Sử dụng File.delete() với MANAGE_EXTERNAL_STORAGE
+                // hoặc MediaStore với user confirmation
+                if (Environment.isExternalStorageManager()) {
+                    // Có quyền MANAGE_EXTERNAL_STORAGE
+                    deleted = pdfFile.file.delete()
+                } else {
+                    // Sử dụng MediaStore với user confirmation
+                    val contentResolver = requireContext().contentResolver
+                    val uri = MediaStore.Files.getContentUri("external")
+                    
+                    val projection = arrayOf(MediaStore.Files.FileColumns._ID)
+                    val selection = "${MediaStore.Files.FileColumns.DATA} = ?"
+                    val selectionArgs = arrayOf(pdfFile.file.absolutePath)
+                    
+                    contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                            val fileUri = Uri.withAppendedPath(uri, id.toString())
+                            val deletedRows = contentResolver.delete(fileUri, null, null)
+                            deleted = deletedRows > 0
+                        }
+                    }
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10 - Sử dụng MediaStore API
                 val contentResolver = requireContext().contentResolver
                 val uri = MediaStore.Files.getContentUri("external")
                 
+                val projection = arrayOf(MediaStore.Files.FileColumns._ID)
                 val selection = "${MediaStore.Files.FileColumns.DATA} = ?"
                 val selectionArgs = arrayOf(pdfFile.file.absolutePath)
                 
-                val deletedRows = contentResolver.delete(uri, selection, selectionArgs)
-                deleted = deletedRows > 0
+                contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                        val fileUri = Uri.withAppendedPath(uri, id.toString())
+                        val deletedRows = contentResolver.delete(fileUri, null, null)
+                        deleted = deletedRows > 0
+                    }
+                }
             } else {
                 // Android 9 và thấp hơn - Sử dụng File.delete()
                 deleted = pdfFile.file.delete()
@@ -304,7 +349,7 @@ class ListViewFragment : Fragment() {
                 }
                 Toast.makeText(requireContext(), "Đã xóa file thành công", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(requireContext(), "Không thể xóa file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Không thể xóa file. Có thể cần cấp quyền quản lý file.", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Lỗi khi xóa file: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -353,25 +398,62 @@ class ListViewFragment : Fragment() {
             
             var renamed = false
             
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+ - Sử dụng MediaStore API
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Android 11+ - Sử dụng File.renameTo() với MANAGE_EXTERNAL_STORAGE
+                // hoặc MediaStore với user confirmation
+                if (Environment.isExternalStorageManager()) {
+                    // Có quyền MANAGE_EXTERNAL_STORAGE
+                    renamed = pdfFile.file.renameTo(newFile)
+                } else {
+                    // Sử dụng MediaStore với user confirmation
+                    val contentResolver = requireContext().contentResolver
+                    val uri = MediaStore.Files.getContentUri("external")
+                    
+                    val projection = arrayOf(MediaStore.Files.FileColumns._ID)
+                    val selection = "${MediaStore.Files.FileColumns.DATA} = ?"
+                    val selectionArgs = arrayOf(pdfFile.file.absolutePath)
+                    
+                    contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                            val fileUri = Uri.withAppendedPath(uri, id.toString())
+                            
+                            val contentValues = ContentValues().apply {
+                                put(MediaStore.Files.FileColumns.DISPLAY_NAME, newFileName)
+                            }
+                            
+                            val updatedRows = contentResolver.update(fileUri, contentValues, null, null)
+                            if (updatedRows > 0) {
+                                // Cũng cần rename file thực tế
+                                renamed = pdfFile.file.renameTo(newFile)
+                            }
+                        }
+                    }
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10 - Sử dụng MediaStore API
                 val contentResolver = requireContext().contentResolver
                 val uri = MediaStore.Files.getContentUri("external")
                 
+                val projection = arrayOf(MediaStore.Files.FileColumns._ID)
                 val selection = "${MediaStore.Files.FileColumns.DATA} = ?"
                 val selectionArgs = arrayOf(pdfFile.file.absolutePath)
                 
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.Files.FileColumns.DISPLAY_NAME, newFileName)
-                    put(MediaStore.Files.FileColumns.DATA, newFile.absolutePath)
-                }
-                
-                val updatedRows = contentResolver.update(uri, contentValues, selection, selectionArgs)
-                renamed = updatedRows > 0
-                
-                // Nếu MediaStore update thành công, cũng cần rename file thực tế
-                if (renamed) {
-                    renamed = pdfFile.file.renameTo(newFile)
+                contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                        val fileUri = Uri.withAppendedPath(uri, id.toString())
+                        
+                        val contentValues = ContentValues().apply {
+                            put(MediaStore.Files.FileColumns.DISPLAY_NAME, newFileName)
+                        }
+                        
+                        val updatedRows = contentResolver.update(fileUri, contentValues, null, null)
+                        if (updatedRows > 0) {
+                            // Cũng cần rename file thực tế
+                            renamed = pdfFile.file.renameTo(newFile)
+                        }
+                    }
                 }
             } else {
                 // Android 9 và thấp hơn - Sử dụng File.renameTo()
@@ -388,7 +470,7 @@ class ListViewFragment : Fragment() {
                 }
                 Toast.makeText(requireContext(), "Đã đổi tên file thành công", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(requireContext(), "Không thể đổi tên file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Không thể đổi tên file. Có thể cần cấp quyền quản lý file.", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Lỗi khi đổi tên file: ${e.message}", Toast.LENGTH_SHORT).show()
