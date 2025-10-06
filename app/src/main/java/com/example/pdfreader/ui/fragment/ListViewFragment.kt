@@ -29,18 +29,19 @@ import com.example.pdfreader.databinding.FragmentListViewBinding
 import com.example.pdfreader.model.PdfFile
 import com.example.pdfreader.ui.activities.PdfViewerActivity
 import com.example.pdfreader.dialog.FileOptionsBottomSheetDialog
+import com.example.pdfreader.dialog.SortOptionsBottomSheetDialog
 import kotlinx.coroutines.*
 import java.io.File
 
 class ListViewFragment : Fragment() {
     
     enum class SortType(val displayName: String) {
-        NAME_A_TO_Z("Tên A-Z"),
-        NAME_Z_TO_A("Tên Z-A"),
-        TIME_OLD_TO_NEW("Thời gian: Cũ → Mới"),
-        TIME_NEW_TO_OLD("Thời gian: Mới → Cũ"),
-        SIZE_SMALL_TO_LARGE("Dung lượng: Nhỏ → Lớn"),
-        SIZE_LARGE_TO_SMALL("Dung lượng: Lớn → Nhỏ")
+        NAME_A_TO_Z("Name A-Z"),
+        NAME_Z_TO_A("Name Z-A"),
+        TIME_OLD_TO_NEW("Time: Old → New"),
+        TIME_NEW_TO_OLD("Time: New → Old"),
+        SIZE_SMALL_TO_LARGE("Capacity: Small → Large"),
+        SIZE_LARGE_TO_SMALL("Capacity: Large → Small")
     }
     
     enum class LayoutType {
@@ -107,11 +108,11 @@ class ListViewFragment : Fragment() {
     
     private fun updateSortButtonUI() {
         // Cập nhật contentDescription để hiển thị kiểu sắp xếp hiện tại
-        binding.sortBy.contentDescription = "Sắp xếp theo: ${currentSortType.displayName}"
+        binding.sortBy.contentDescription = "Sort by: ${currentSortType.displayName}"
         
         // Có thể thêm tooltip hoặc thay đổi icon tùy theo kiểu sắp xếp
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            binding.sortBy.tooltipText = "Sắp xếp theo: ${currentSortType.displayName}"
+            binding.sortBy.tooltipText = "Sort by: ${currentSortType.displayName}"
         }
     }
     
@@ -205,18 +206,15 @@ class ListViewFragment : Fragment() {
     }
     
     private fun showSortDialog() {
-        val sortOptions = SortType.values().map { it.displayName }.toTypedArray()
-        val currentIndex = SortType.values().indexOf(currentSortType)
-        
-        AlertDialog.Builder(requireContext())
-            .setTitle("Sắp xếp theo")
-            .setSingleChoiceItems(sortOptions, currentIndex) { dialog, which ->
-                currentSortType = SortType.values()[which]
+        val sortDialog = SortOptionsBottomSheetDialog(
+            context = requireContext(),
+            currentSortType = currentSortType,
+            onSortSelected = { selectedSortType ->
+                currentSortType = selectedSortType
                 sortPdfFiles()
-                dialog.dismiss()
             }
-            .setNegativeButton("Hủy", null)
-            .show()
+        )
+        sortDialog.show()
     }
     
     private fun sortPdfFiles() {
