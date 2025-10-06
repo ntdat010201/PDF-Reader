@@ -31,13 +31,13 @@
             app:searchIcon="@drawable/ic_search" />
 
         <ImageView
-            android:id="@+id/icon_sort"
+            android:id="@+id/sort_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:padding="5dp"
-            android:src="@drawable/ic_sort" />
+            android:src="@drawable/ic_sort_by" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,20 +61,22 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/tools"
+            android:padding="6dp"
+            android:id="@+id/grid_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="18dp"
             android:src="@drawable/ic_tools"
             app:layout_constraintBottom_toBottomOf="@+id/tv_file_count"
-            app:layout_constraintEnd_toStartOf="@+id/sort_by"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_list"
             app:layout_constraintTop_toTopOf="@+id/tv_file_count" />
 
         <ImageView
-            android:id="@+id/sort_by"
+            android:padding="6dp"
+            android:id="@+id/vertical_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_sort_by"
+            android:src="@drawable/ic_sort"
             app:layout_constraintBottom_toBottomOf="@+id/tv_file_count"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_file_count" />

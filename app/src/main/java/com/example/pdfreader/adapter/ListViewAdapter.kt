@@ -12,7 +12,8 @@ import com.example.pdfreader.model.PdfFile
 class ListViewAdapter(
     private var pdfFiles: MutableList<PdfFile> = mutableListOf(),
     private val onItemClick: (PdfFile) -> Unit = {},
-    private val onMoreClick: (PdfFile) -> Unit = {}
+    private val onMoreClick: (PdfFile) -> Unit = {},
+    private var isGridLayout: Boolean = false
 ) : RecyclerView.Adapter<ListViewAdapter.PdfViewHolder>() {
 
     inner class PdfViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -39,8 +40,9 @@ class ListViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PdfViewHolder {
+        val layoutRes = if (isGridLayout) R.layout.item_file_grid else R.layout.item_file
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_file, parent, false)
+            .inflate(layoutRes, parent, false)
         return PdfViewHolder(view)
     }
 
@@ -96,5 +98,15 @@ class ListViewAdapter(
             }
         }
         updatePdfFiles(filteredList)
+    }
+    
+    /**
+     * Cập nhật layout type (grid hoặc linear)
+     */
+    fun setGridLayout(isGrid: Boolean) {
+        if (isGridLayout != isGrid) {
+            isGridLayout = isGrid
+            notifyDataSetChanged()
+        }
     }
 }

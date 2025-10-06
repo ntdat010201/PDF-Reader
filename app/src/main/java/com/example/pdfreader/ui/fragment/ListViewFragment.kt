@@ -14,16 +14,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pdfreader.ui.decoration.GridSpacingItemDecoration
 import com.example.pdfreader.adapter.ListViewAdapter
 import com.example.pdfreader.databinding.FragmentListViewBinding
 import com.example.pdfreader.model.PdfFile
 import com.example.pdfreader.ui.activities.PdfViewerActivity
+import com.example.pdfreader.dialog.FileOptionsBottomSheetDialog
 import kotlinx.coroutines.*
 import java.io.File
 
@@ -38,10 +43,17 @@ class ListViewFragment : Fragment() {
         SIZE_LARGE_TO_SMALL("Dung lượng: Lớn → Nhỏ")
     }
     
+    enum class LayoutType {
+        LINEAR,
+        GRID
+    }
+    
     private lateinit var binding: FragmentListViewBinding
     private lateinit var adapter: ListViewAdapter
     private var allPdfFiles = mutableListOf<PdfFile>()
     private var currentSortType = SortType.NAME_A_TO_Z
+    private var currentLayoutType = LayoutType.LINEAR
+    private var gridItemDecoration: GridSpacingItemDecoration? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,13 +68,15 @@ class ListViewFragment : Fragment() {
         setupRecyclerView()
         setupSearchView()
         setupSortButton()
+        setupLayoutButtons()
         scanForPdfFiles()
     }
 
     private fun setupRecyclerView() {
         adapter = ListViewAdapter(
             onItemClick = { pdfFile -> openPdfFile(pdfFile) },
-            onMoreClick = { pdfFile -> showFileOptions(pdfFile) }
+            onMoreClick = { pdfFile -> showFileOptions(pdfFile) },
+            isGridLayout = (currentLayoutType == LayoutType.GRID)
         )
         
         binding.rcvFile.apply {
@@ -98,6 +112,95 @@ class ListViewFragment : Fragment() {
         // Có thể thêm tooltip hoặc thay đổi icon tùy theo kiểu sắp xếp
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             binding.sortBy.tooltipText = "Sắp xếp theo: ${currentSortType.displayName}"
+        }
+    }
+    
+    private fun setupLayoutButtons() {
+        binding.verticalList.setOnClickListener {
+            switchToLinearLayout()
+        }
+        
+        binding.gridList.setOnClickListener {
+            switchToGridLayout()
+        }
+        
+        updateLayoutButtonsUI()
+    }
+    
+    private fun switchToLinearLayout() {
+        if (currentLayoutType != LayoutType.LINEAR) {
+            currentLayoutType = LayoutType.LINEAR
+            
+            // Remove grid decoration if exists
+            gridItemDecoration?.let { decoration ->
+                binding.rcvFile.removeItemDecoration(decoration)
+            }
+            
+            // Recreate adapter with linear layout
+            val currentFiles = allPdfFiles.toList()
+            adapter = ListViewAdapter(
+                onItemClick = { pdfFile -> openPdfFile(pdfFile) },
+                onMoreClick = { pdfFile -> showFileOptions(pdfFile) },
+                isGridLayout = false
+            )
+            
+            binding.rcvFile.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = this@ListViewFragment.adapter
+            }
+            
+            // Update adapter with current files
+            adapter.updatePdfFiles(currentFiles)
+            updateLayoutButtonsUI()
+        }
+    }
+    
+    private fun switchToGridLayout() {
+        if (currentLayoutType != LayoutType.GRID) {
+            currentLayoutType = LayoutType.GRID
+            
+            // Remove existing decoration if any
+            gridItemDecoration?.let { decoration ->
+                binding.rcvFile.removeItemDecoration(decoration)
+            }
+            
+            // Create and add new grid decoration
+            val spacingInPixels = (4 * resources.displayMetrics.density).toInt() // 4dp in pixels
+            gridItemDecoration = GridSpacingItemDecoration(2, spacingInPixels, true)
+            gridItemDecoration?.let { decoration ->
+                binding.rcvFile.addItemDecoration(decoration)
+            }
+            
+            // Recreate adapter with grid layout
+            val currentFiles = allPdfFiles.toList()
+            adapter = ListViewAdapter(
+                onItemClick = { pdfFile -> openPdfFile(pdfFile) },
+                onMoreClick = { pdfFile -> showFileOptions(pdfFile) },
+                isGridLayout = true
+            )
+            
+            binding.rcvFile.apply {
+                layoutManager = GridLayoutManager(requireContext(), 2)
+                adapter = this@ListViewFragment.adapter
+            }
+            
+            // Update adapter with current files
+            adapter.updatePdfFiles(currentFiles)
+            updateLayoutButtonsUI()
+        }
+    }
+    
+    private fun updateLayoutButtonsUI() {
+        // Cập nhật alpha để hiển thị button nào đang active
+        when (currentLayoutType) {
+            LayoutType.LINEAR -> {
+                binding.verticalList.alpha = 1.0f
+                binding.gridList.alpha = 0.5f
+            }
+            LayoutType.GRID -> {
+                binding.verticalList.alpha = 0.5f
+                binding.gridList.alpha = 1.0f
+            }
         }
     }
     
@@ -249,20 +352,14 @@ class ListViewFragment : Fragment() {
     }
 
     private fun showFileOptions(pdfFile: PdfFile) {
-        val options = arrayOf("Mở", "Chia sẻ", "Thông tin", "Đổi tên", "Xóa")
-        
-        AlertDialog.Builder(requireContext())
-            .setTitle(pdfFile.getNameWithoutExtension())
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> openPdfFile(pdfFile)
-                    1 -> sharePdfFile(pdfFile)
-                    2 -> showFileInfo(pdfFile)
-                    3 -> showRenameDialog(pdfFile)
-                    4 -> showDeleteConfirmDialog(pdfFile)
-                }
-            }
-            .show()
+        val dialog = FileOptionsBottomSheetDialog(
+            context = requireContext(),
+            pdfFile = pdfFile,
+            onRename = { file -> showRenameDialog(file) },
+            onShare = { file -> sharePdfFile(file) },
+            onDelete = { file -> showDeleteConfirmDialog(file) }
+        )
+        dialog.show()
     }
 
     private fun showFileInfo(pdfFile: PdfFile) {
@@ -476,4 +573,6 @@ class ListViewFragment : Fragment() {
             Toast.makeText(requireContext(), "Lỗi khi đổi tên file: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }

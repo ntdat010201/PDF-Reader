@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/file_icon"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/ic_pdf"
+            android:layout_marginTop="18dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/file_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="4dp"
+            android:text="file_name"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/file_icon"
+            app:layout_constraintStart_toStartOf="@+id/file_icon"
+            app:layout_constraintTop_toBottomOf="@+id/file_icon" />
+
+        <TextView
+            android:id="@+id/last_modified"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginHorizontal="4dp"
+            android:text="storage_path"
+            android:textColor="@color/grey"
+            android:textSize="9sp"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/file_icon"
+            app:layout_constraintStart_toStartOf="@+id/file_icon"
+            app:layout_constraintTop_toBottomOf="@+id/file_name" />
+
+        <TextView
+            android:id="@+id/size_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginHorizontal="4dp"
+            android:text="0_0kb"
+            android:textColor="@color/grey"
+            android:textSize="9sp"
+            android:textAlignment="center"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/file_icon"
+            app:layout_constraintStart_toStartOf="@+id/file_icon"
+            app:layout_constraintTop_toBottomOf="@+id/last_modified" />
+
+        <ImageView
+            android:id="@+id/more_vert"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/file_name"
+            app:layout_constraintBottom_toBottomOf="@+id/size_file" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
